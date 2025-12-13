@@ -44,21 +44,39 @@ export default function userAggregateRouter(knex) {
       case 'by_domain':
         // email のドメイン別ユーザー数
         sql = `
-          
+          SELECT
+            SUBSTRING_INDEX(email, '@', -1) AS domain,
+            COUNT(*) AS users_count
+          FROM users
+          ${where}
+          GROUP BY domain
+          ORDER BY users_count DESC
         `;
         break;
 
       case 'by_day':
         // 日別の登録数
         sql = `
-          
+          SELECT
+            DATE(created_at) AS day,
+            COUNT(*) AS registrations
+          FROM users
+          ${where}
+          GROUP BY DATE(created_at)
+          ORDER BY day
         `;
         break;
 
       case 'by_month':
         // 月別の登録数
         sql = `
-          
+          SELECT
+            DATE_FORMAT(created_at, '%Y-%m') AS month,
+            COUNT(*) AS registrations
+          FROM users
+          ${where}
+          GROUP BY month
+          ORDER BY month
         `;
         break;
 
